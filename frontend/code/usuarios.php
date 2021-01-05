@@ -1,0 +1,56 @@
+<?php
+$users = [
+    '01' =>  tifmAI,
+    '02' =>  tifmBN,
+    '03' =>  tifmCOMPRAS,
+    '04' =>  tifmCJ,
+    '05' =>  tifmCONT,
+    '06' =>  tifmCTIM,
+    '07' =>  tifmDGD,
+    '08' =>  tifmDA,
+    '09' =>  tifmDGC,
+    '10' =>  tifmDP,
+    '11' =>  tifmDPCAD,
+    '12' =>  tifmDTH,
+    '13' =>  tifmDTI,
+    '14' =>  tifmFAIM,
+    '15' =>  tifmFIMIM,
+    '16' =>  tifmSASP,
+    '17' =>  tifmSC,
+    '18' =>  tifmSIP,
+    '19' =>  tifmSPSC,
+    '20' =>  tifmSPS,
+    '21' =>  tifmSS,
+    '22' =>  tifmSAIM,
+    '23' =>  tifmSATIM,
+    '24' =>  tifmTESO
+];
+
+$claves = [
+    '01'  =>  AItifm,
+    '02'  =>  BNtifm,
+    '03'  =>  COMPRAStifm,
+    '04'  =>  CJtifm,
+    '05'  =>  CONTtifm,
+    '06'  =>  CTIMtifm,
+    '07'  =>  DGDtifm,
+    '08'  =>  DAtifm,
+    '09'  =>  DGCtifm,
+    '10'  =>  DPtifm,
+    '11'  =>  DPCADtifm,
+    '12'  =>  DTHtifm,
+    '13'  =>  DTItifm,
+    '14'  =>  FAIMtifm,
+    '15'  =>  FIMIMtifm,
+    '16'  =>  SASPtifm,
+    '17'  =>  SCtifm,
+    '18'  =>  SIPtifm,
+    '19'  =>  SPSCtifm,
+    '20'  =>  SPStifm,
+    '21'  =>  SStifm,
+    '22'  =>  SAIMtifm,
+    '23'  =>  SATIMtifm,
+    '24'  =>  TESOtifm
+];
+
+?>
