@@ -1,14 +1,19 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\ButtonDropdown;
 use yii\bootstrap\Tabs;
+//use yii\jui\DatePicker;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\PersguardiaislaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+
+$fecha = date('Y-m-d');
 
 $this->title = 'Personal de guardia';
 $this->params['breadcrumbs'][] = $this->title;
@@ -38,6 +43,29 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     <?php endif; ?>
 
+    <?php if ( Yii::$app->user->can('superadmin') || Yii::$app->user->can('imprimirpdf') ): ?>
+        <div class="pers-form">
+            <div class="row clearfix">
+                <div class="col-md-offset-4 col-md-4">
+                    <h4 class="text-center">Exportar PDF de personal de Guardia de la Isla</h4>
+                    <?php $form = ActiveForm::begin([
+                        'id'=>'reportedia',
+                        'method' => 'post',
+                        'action'=>Url::toRoute('/traslado/reportepdf'),
+                    ]); ?>
+
+                    <?= Html::activeHiddenInput($persguardia,'fcarga',['value'=>$fecha]);?>
+                    <?= Html::activeHiddenInput($persexterno,'fcarga',['value'=>$fecha]);?>
+
+                    <div class="form-group">
+                        <?= Html::submitButton('Exportar', ['class' => 'btn btn-success']) ?>
+                    </div>
+                    <?php ActiveForm::end(); ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
@@ -57,6 +85,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'Personal',
                     'attribute'=>'nombcompleto',
+                    'contentOptions' => [
+                        'class' => 'text-center',
+                    ],
+                    'filterInputOptions' => ['class' => '', 'id' => 'nombre', 'prompt' => 'Nombre completo'],
                     'value'=>function($data){
                         return $data->getpers()->nombcompleto;
                     },
@@ -78,6 +110,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'F Salida',
                     'attribute'=>'fsalida',
+                    'filter'=> DatePicker::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'fsalida',
+                        'language' => 'es',
+                        'type' => DatePicker::TYPE_INPUT,//'type' => DatePicker::TYPE_BUTTON,
+                        'options' => ['placeholder' => '0000-00-00'],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-MM-dd'
+                        ],
+                    ]),
                     'value'=>function($data){
                         return $data->fsalida;
                     }
@@ -85,12 +127,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'F Retorno',
                     'attribute'=>'fretorno',
+                    'filter'=> DatePicker::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'fretorno',
+                        'language' => 'es',
+                        'type' => DatePicker::TYPE_INPUT,//'type' => DatePicker::TYPE_BUTTON,
+                        'options' => ['placeholder' => '0000-00-00'],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-MM-dd'
+                        ],
+                    ]),
                     'value'=>function($data){
                         return $data->fretorno;
                     }
                 ],
                 [
-                    'label'=>'Tipo pers',
+                    'label'=>'Tipo Guardia',
                     'attribute'=>'tippers',
                     'filter'=>[
                         'guardia'=>'Guardia',
@@ -117,6 +169,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'Status',
                     'attribute'=>'status',
+                    'filter'=>false,
                     'value'=>function($data){
                         return $data->status == 1 ? 'Aceptado' : 'No aceptado';
                     }

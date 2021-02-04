@@ -50,6 +50,11 @@ class PersonalSearch extends Personal
             'query' => $query,
         ]);
 
+        // formateo con punto decimal
+        if ( !empty($params['PersonalSearch']['ci']) ) {
+            $params['PersonalSearch']['ci'] = number_format($params['PersonalSearch']['ci'],0,'.','.');
+        }
+
         $this->load($params);
 
         if (!$this->validate()) {

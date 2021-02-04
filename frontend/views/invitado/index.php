@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\bootstrap\ButtonDropdown;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\PersexternoSearch */
@@ -54,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             [
-                'label'=>'Invitado',
+                'label'=>'Nombre completo',
                 'attribute'=>'nombcompleto',
                 'value'=>function($data){
                     return $data->nombcompleto;
@@ -77,6 +78,16 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label'=>'F Salida',
                 'attribute'=>'fsalida',
+                'filter'=> DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'fsalida',
+                    'language' => 'es',
+                    'type' => DatePicker::TYPE_INPUT,// DatePicker::TYPE_BUTTON || DatePicker::TYPE_INPUT
+                    'options' => ['placeholder' => '0000-00-00'],
+                    'pluginOptions' => [
+                        'format' => 'yyyy-MM-dd'
+                    ],
+                ]),
                 'value'=>function($data){
                     return $data->fsalida;
                 }
@@ -84,6 +95,16 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label'=>'F Retorno',
                 'attribute'=>'fretorno',
+                'filter'=> DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'fretorno',
+                    'language' => 'es',
+                    'type' => DatePicker::TYPE_INPUT,// DatePicker::TYPE_BUTTON || DatePicker::TYPE_INPUT
+                    'options' => ['placeholder' => '0000-00-00'],
+                    'pluginOptions' => [
+                        'format' => 'yyyy-MM-dd'
+                    ],
+                ]),
                 'value'=>function($data){
                     return $data->fretorno;
                 }
@@ -91,6 +112,10 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label'=>'Tipo pers',
                 'attribute'=>'tippers',
+                'filter'=>[
+                    'guardia'=>'Guardia',
+                    'foraneo'=>'Foraneo'
+                ],
                 'value'=>function($data){
                     return $data->tippers;
                 }

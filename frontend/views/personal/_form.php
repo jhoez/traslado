@@ -15,7 +15,7 @@ use yii\helpers\ArrayHelper;
             <?php $form = ActiveForm::begin(); ?>
 
             <div class="form-group">
-                <?= $form->field($personal, 'ci')->textInput(['maxlength' => true,'placeholder'=>'11.222.333']) ?>
+                <?= $form->field($personal, 'ci')->textInput(['id'=>'cedula','maxlength' => true,'placeholder'=>'11.222.333']) ?>
             </div>
 
             <div class="form-group">
@@ -51,3 +51,21 @@ use yii\helpers\ArrayHelper;
     </div>
 
 </div>
+
+<script type="text/javascript">
+    const number = document.getElementById('cedula');
+    //const number = document.querySelector('.cedula');
+
+    function formatNumber (n) {
+        n = String(n).replace(/\D/g, "");
+        return n === '' ? n : Number(n).toLocaleString();
+    }
+
+    if(typeof number !== null){
+        number.addEventListener('keyup', (e) => {
+            const element = e.target;
+            const value = element.value;
+            element.value = formatNumber(value);
+        });
+    }
+</script>

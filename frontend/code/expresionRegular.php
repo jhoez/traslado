@@ -17,7 +17,7 @@
  /[aeiou]|[é]/ig evalua si existen vocales, e tildada y se utiliza lo siguiente " | /ig "
  /a+/ evalua si existe una o mas veces a.
  /a+/g evalua si existe "a" repetida y que aparezcan todas las apariciones.
- /a?/g evalua si aparece "o" o no aparece "o".
+ /a?/g evalua si aparece "a" o no aparece "a".
  | operador logico "o"
     controladores
       i = insensible a mayusculas y minusculas.

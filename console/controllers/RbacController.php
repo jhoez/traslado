@@ -306,6 +306,9 @@ class RbacController extends Controller
             ('17.630.924',	'MIQUELENA CALDENA MARISELYS CAROLINA', 'F', 10, 8),
             ('24.750.264',	'PONCE RUIZ BRUNO DAVID', 'M', 10, 8),
             -- Dirección de Gestion Comunicacional
+            ('24.334.057',  'RICARDO LICETT', 'M', 11, 9),
+            ('3.978010',    'EDUARDO ZABALA', 'M', 11, 9),
+            ('6.249.146',   'BRIGIDO ARRAIZ', 'M', 11, 9),
             ('19.089.326',	'MADRIZ YBARRA ALEXIS FLORENTINO', 'M', 11, 9),
             ('21.159.093',	'DUGARTE PEÑA WENDY COROMOTO', 'F', 11, 9),
             ('23.944.259',	'AGUILAR MENDOZA ASTRID CAROLINA', 'F', 11, 9),

@@ -17,7 +17,7 @@ $fecha = date( "Y-m-d" );
             <?php $form = ActiveForm::begin(); ?>
             <?= Html::activeHiddenInput($invitado,"fcarga",['value'=>$fecha]);?>
             <div class="form-group">
-                <?= $form->field($invitado, 'ci')->textInput(['maxlength' => true,'placeholder'=>'11.222.333']) ?>
+                <?= $form->field($invitado, 'ci')->textInput(['id' => 'cedula','maxlength' => true,'placeholder'=>'11.222.333']) ?>
             </div>
 
             <div class="form-group">
@@ -87,3 +87,21 @@ $fecha = date( "Y-m-d" );
     </div>
 
 </div>
+
+<script type="text/javascript">
+    const number = document.getElementById('cedula');
+    //const number = document.querySelector('.cedula');
+
+    function formatNumber (n) {
+        n = String(n).replace(/\D/g, "");
+        return n === '' ? n : Number(n).toLocaleString();
+    }
+
+    if(typeof number !== null){
+        number.addEventListener('keyup', (e) => {
+            const element = e.target;
+            const value = element.value;
+            element.value = formatNumber(value);
+        });
+    }
+</script>

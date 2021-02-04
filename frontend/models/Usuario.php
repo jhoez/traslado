@@ -51,6 +51,7 @@ class Usuario extends ActiveRecord implements IdentityInterface
             [['username', 'password', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             [['auth_key'], 'string', 'max' => 32],
             [['email'], 'unique'],
+            [['email'], 'email'],
             [['password_reset_token'], 'unique'],
             [['username'], 'unique'],
             [['fkdepart'], 'exist', 'skipOnError' => true, 'targetClass' => Departamento::className(), 'targetAttribute' => ['fkdepart' => 'iddepart']],

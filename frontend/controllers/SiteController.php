@@ -101,12 +101,16 @@ class SiteController extends Controller
             $nombuser = $purifier->process($loginform->username);
             $passworduser = $purifier->process($loginform->password);
             $usuario = Usuario::find()->where(['username'=>$nombuser])->one();
-            if ( $usuario->username === $nombuser && $usuario->password === $passworduser ) {
+            if (
+                $usuario->username === $nombuser &&
+                $usuario->password === $passworduser &&
+                $usuario->status === 1
+            ) {
                 if ( $loginform->login() )// logeo el usuario
                 {
                     if (Yii::$app->user->can('superadmin')) {
                         yii::$app->session->setFlash('success',"Bienvenido SuperAdministrador: $loginform->username");
-                        return $this->redirect(["usuario/index"]);
+                        return $this->redirect(["/usuario/index"]);
                     }
                     if (
                         Yii::$app->user->can('administrador') ||
@@ -114,11 +118,11 @@ class SiteController extends Controller
                         Yii::$app->user->can('secretariogg')
                     ) {
                         yii::$app->session->setFlash('success',"Bienvenido Administrador: $loginform->username");
-                        return $this->redirect(["traslado/index"]);
+                        return $this->redirect(["/traslado/index"]);
                     }
                     if (Yii::$app->user->can('personal')) {
                         yii::$app->session->setFlash('success',"Bienvenido: $loginform->username");
-                        return $this->redirect(["traslado/create"]);
+                        return $this->redirect(["/traslado/create"]);
                     }
                 }
             }else{

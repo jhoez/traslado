@@ -42,6 +42,7 @@ class Persexterno extends \yii\db\ActiveRecord
              [['status'], 'boolean'],
              [['fkhosp', 'fkuser'], 'default', 'value' => null],
              [['fkhosp', 'fkuser'], 'integer'],
+             [['ci'], 'string', 'max' => 20],
              [['ci'],  'match', 'pattern' => '/(\.d*[0-9]{2})/','message'=>'La cedula debe contener puntos de separación!!'],
              [['nombcompleto', 'ente'], 'string', 'max' => 255],
              [['actividad'], 'string', 'max' => 510],
@@ -66,11 +67,19 @@ class Persexterno extends \yii\db\ActiveRecord
             'fcarga' => 'Fcarga',
             'fsalida' => 'Fingreso',
             'fretorno' => 'Fegreso',
-            'tippers' => 'Tipo de Guardia',
+            'tippers' => 'Tipo de Pers',
             'status' => 'Status',
             'sexo' => 'Sexo',
             'fkhosp' => 'Fkhosp',
             'fkuser' => 'user',
         ];
+    }
+
+    /**
+    * @method obtiene el departamento asociado al personal
+    */
+    public function gethosp()
+    {
+        return Hospedaje::find()->where(['idhosp'=>$this->fkhosp])->one();
     }
 }

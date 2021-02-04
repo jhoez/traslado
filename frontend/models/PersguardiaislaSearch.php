@@ -11,6 +11,7 @@ use frontend\models\Persguardiaisla;
  */
 class PersguardiaislaSearch extends Persguardiaisla
 {
+    //public $ci;
     public $nombdepart;
     //public $nombcompleto;
     /**
@@ -20,7 +21,7 @@ class PersguardiaislaSearch extends Persguardiaisla
     {
         return [
             [['idpersgi', 'fkpers', 'fkuser', 'fkdepart', 'fkhosp'], 'integer'],
-            [['actividad', 'fcarga', 'fsalida', 'fretorno', 'tippers', 'nombdepart'], 'safe'],
+            [['actividad', 'fcarga', 'fsalida', 'fretorno', 'tippers','nombdepart'], 'safe'],
             [['status'], 'boolean'],
         ];
     }
@@ -78,6 +79,7 @@ class PersguardiaislaSearch extends Persguardiaisla
         $query->andFilterWhere(['ilike', 'actividad', $this->actividad])
             ->andFilterWhere(['ilike', 'tippers', $this->tippers])
             ->andFilterWhere(['ilike', 'nombdepart', $this->nombdepart]);
+            //->andFilterWhere(['ilike', 'ci', $this->ci])
             //->andFilterWhere(['ilike', 'nombcompleto', $this->nombcompleto]);
 
         return $dataProvider;

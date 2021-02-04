@@ -41,10 +41,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
-                'label'=>'Estado',
+                'label'=>'Status',
                 'attribute'=>'status',
                 'value'=>function($data){
-                    return $data->status === 1 ? 'Usuario Activo':'Usuario Inactivo';
+                    return $data->status === 1 ? 'Activo':'Inactivo';
                 }
             ],
             [
@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Departamento',
                 'attribute'=>'nombdepart',
                 'value'=>function($data){
-                    return $data->getdepartamento() !== null ? $data->getdepartamento()->nombdepart : 'sin departamento';
+                    return $data->getdepartamento()['nombdepart'] !== null ? $data->getdepartamento()['nombdepart'] : 'sin departamento';
                 }
             ],
             [

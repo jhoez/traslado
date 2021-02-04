@@ -33,6 +33,7 @@ class Personal extends \yii\db\ActiveRecord
             [['ci','nombcompleto','sexo','fkuser','fkdepart'],  'required'],
             [['fkuser', 'fkdepart'], 'default', 'value' => null],
             [['fkuser', 'fkdepart'], 'integer'],
+            [['ci'], 'string', 'max' => 20],
             [['ci'],  'match', 'pattern' => '/(\.d*[0-9]{2})/','message'=>'La cedula debe contener puntos de separación!!'],
             [['nombcompleto'], 'string', 'max' => 255],
             [['sexo'], function($attribute,$param){

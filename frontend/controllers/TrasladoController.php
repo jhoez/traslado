@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use frontend\models\Persguardiaisla;
 use frontend\models\PersguardiaislaSearch;
+use frontend\models\Persexterno;
 use frontend\models\Departamento;
 use frontend\models\Hospedaje;
 use frontend\models\Habitacion;
@@ -13,6 +14,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\HtmlPurifier;
+use yii\helpers\Html;
 
 /**
  * PersguardiaislaController implements the CRUD actions for Persguardiaisla model.
@@ -40,12 +42,14 @@ class TrasladoController extends Controller
      */
     public function actionIndex()
     {
-        $habitacion = new Habitacion;
-        $numhab = Habitacion::find()->one();
+        $persguardia = new Persguardiaisla;
+        $persexterno = new Persexterno;
         $searchModel = new PersguardiaislaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $habitacion = new Habitacion;
+        $numhab = Habitacion::find()->one();
 
-        if (Yii::$app->user->can('secretariogg')) {
+        if ( Yii::$app->user->can('superadmin') || Yii::$app->user->can('secretariogg') ) {
             $dataProvider->query->where(['status'=>false]);
         }
 
@@ -58,10 +62,12 @@ class TrasladoController extends Controller
         }
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'habitacion' => $habitacion,
-            'numhab' => $numhab
+            'searchModel'   => $searchModel,
+            'dataProvider'  => $dataProvider,
+            'habitacion'    => $habitacion,
+            'numhab'        => $numhab,
+            'persguardia'   => $persguardia,
+            'persexterno'   => $persexterno
         ]);
     }
 
@@ -120,7 +126,6 @@ class TrasladoController extends Controller
         $param = $purifier->process( Yii::$app->request->get('id') );
 
         $persguardia = Persguardiaisla::find()->where([
-            'fcarga'=>date('Y-m-d'),
             'idpersgi'=>$param,
         ])->one();
         return $this->render('view2', [
@@ -153,6 +158,7 @@ class TrasladoController extends Controller
                     }
                 }
                 //echo "<pre>";var_dump($result);die;
+                //echo "<pre>";var_dump($persguardia);die;
                 for($i=0; $i < count($persguardia->fkpers);$i++) {
                     if ($persguardia->fkpers[$i] != '') {
                         $guardia = new Persguardiaisla;
@@ -161,8 +167,8 @@ class TrasladoController extends Controller
                         $guardia->fkdepart = Yii::$app->user->identity->fkdepart;
                         $guardia->actividad = $persguardia->actividad[$i];
                         $guardia->fcarga = $persguardia->fcarga;
-                        $guardia->fingreso = $persguardia->fingreso[$i];
-                        $guardia->fegreso = $persguardia->fegreso[$i];
+                        $guardia->fsalida = $persguardia->fsalida[$i];
+                        $guardia->fretorno = $persguardia->fretorno[$i];
                         $guardia->tippers = $persguardia->tippers[$i];
                         if( $guardia->save() ){
                             $aux[] = $guardia->idpersgi;
@@ -220,38 +226,53 @@ class TrasladoController extends Controller
         $param = [];
         $habitacion = Habitacion::find()->one();
 
-        if ( $habitacion === null) {
-            Yii::$app->session->setFlash('error','No hay habitaciones cargada para realizar este procedimiento!!');
-            return $this->redirect(['index']);
-        }
-
-        foreach ( Yii::$app->request->get() as $key => $value) {
-            $param[$key] = $purifier->process($value);
-        }
-
-        $persguardiaisla = Persguardiaisla::find()->where(['idpersgi'=>$param['id']])->one();
-
-        $param['param'] == 's' ? $persguardiaisla->status = true : $persguardiaisla->status = false;
-        $persguardiaisla->getpers()->sexo == 'M' && $persguardiaisla->status == true ?
-        $habitacion->habhombres -= 1 : '';
-        $persguardiaisla->getpers()->sexo == 'F' && $persguardiaisla->status == true ?
-        $habitacion->habmujeres -= 1 : '';
-
-        $persguardiaisla->getpers()->sexo == 'M' && $persguardiaisla->status == false ?
-        $habitacion->habhombres += 1 : '';
-        $persguardiaisla->getpers()->sexo == 'F' && $persguardiaisla->status == false ?
-        $habitacion->habmujeres += 1 : '';
-        $habitacion->save();
-
-        if ( $persguardiaisla->save() ) {
-            if ($param['param'] == 's'){
-                Yii::$app->session->setFlash('success',"Aceptado: ".$persguardiaisla->getpers()->nombcompleto);
-            }else if ($param['param'] == 'n'){
-                Yii::$app->session->setFlash('error',"No Aceptado: ".$persguardiaisla->getpers()->nombcompleto);
+        if ($habitacion != null || $habitacion != []) {
+            if ( $habitacion->habhombres === 0 && $habitacion->habmujeres === 0 ) {
+                Yii::$app->session->setFlash('error','No hay habitaciones cargada para realizar este procedimiento!!');
+                return $this->redirect(['index']);
             }
-            return $this->redirect(['index']);
+
+            if ( $habitacion->habhombres === 0 ) {
+                Yii::$app->session->setFlash('error','No hay habitaciones disponibles para los Caballeros!!');
+                return $this->redirect(['index']);
+            }
+
+            if ( $habitacion->habmujeres === 0 ) {
+                Yii::$app->session->setFlash('error','No hay habitaciones disponibles para los Damas!!');
+                return $this->redirect(['index']);
+            }
+
+            foreach ( Yii::$app->request->get() as $key => $value) {
+                $param[$key] = $purifier->process($value);
+            }
+
+            $persguardiaisla = Persguardiaisla::find()->where(['idpersgi'=>$param['id']])->one();
+
+            $param['param'] == 's' ? $persguardiaisla->status = true : $persguardiaisla->status = false;
+            $persguardiaisla->getpers()->sexo == 'M' && $persguardiaisla->status == true ?
+            $habitacion->habhombres -= 1 : '';
+            $persguardiaisla->getpers()->sexo == 'F' && $persguardiaisla->status == true ?
+            $habitacion->habmujeres -= 1 : '';
+
+            $persguardiaisla->getpers()->sexo == 'M' && $persguardiaisla->status == false ?
+            $habitacion->habhombres += 1 : '';
+            $persguardiaisla->getpers()->sexo == 'F' && $persguardiaisla->status == false ?
+            $habitacion->habmujeres += 1 : '';
+            $habitacion->save();
+
+            if ( $persguardiaisla->save() ) {
+                if ($param['param'] == 's'){
+                    Yii::$app->session->setFlash('success',"Aceptado: ".$persguardiaisla->getpers()->nombcompleto);
+                }else if ($param['param'] == 'n'){
+                    Yii::$app->session->setFlash('error',"No Aceptado: ".$persguardiaisla->getpers()->nombcompleto);
+                }
+                return $this->redirect(['index']);
+            }else {
+                Yii::$app->session->setFlash('error','No se actualizo el status');
+                return $this->redirect(['index']);
+            }
         }else {
-            Yii::$app->session->setFlash('error','No se actualizo el status');
+            Yii::$app->session->setFlash('error','No se puede realizar esta acción, No hay habitaciones disponibles!!');
             return $this->redirect(['index']);
         }
 
@@ -276,6 +297,46 @@ class TrasladoController extends Controller
         return $this->render('numhab',[
             'habitacion'=>$habitacion
         ]);
+    }
+
+    /**
+    *   @method imprimirReporte
+    */
+    public function actionReportepdf()
+    {
+        $personalinterno = new Persguardiaisla;
+        $personalexterno = new Persexterno;
+
+        if ( $personalinterno->load(Yii::$app->request->post()) ) {
+            if ( $personalinterno->validate() ) {
+                $fecha = $personalinterno->fcarga;
+                $personalinterno = Persguardiaisla::find()->where(['fcarga'=>$fecha,'status'=>true])->all();
+                if ( $personalinterno != null || $personalinterno != [] ) {
+                    $personalexterno = Persexterno::find()->where(['fcarga'=>$fecha,'status'=>true])->all();
+                    //API MPDF
+                    $pdf = Yii::$app->pdf;
+                    $API = $pdf->api;
+                    $API->setAutoTopMargin = 'stretch';
+                    $API->setAutoBottomMargin = true;
+                    $cabecera = Html::img(Yii::$app->getBasePath().'/web/img/cintillotifm.jpg');
+                    $API->SetHTMLHeader($cabecera);
+                    // Yii::$app->basePath igual a Yii::$app->getBasePath()
+                    $stylesheet = file_get_contents(Yii::$app->getBasePath().'/web/css/csspdf.css');
+                    $API->WriteHTML($stylesheet,1);
+                    $pdfFilename = 'Reporte_de_fecha_'.$fecha.'.pdf';
+
+                    $vista = $this->renderPartial('_reportespdf',[
+                        'personalinterno'=>$personalinterno,
+                        'personalexterno'=>$personalexterno
+                    ]);
+                    $API->WriteHtml($vista);
+                    $API->Output($pdfFilename,'D');
+                }else {
+                    Yii::$app->session->setFlash('error','No existe la data del personal a exportar!!');
+                }
+            }
+        }
+        return $this->redirect(['index']);
     }
 
     /**

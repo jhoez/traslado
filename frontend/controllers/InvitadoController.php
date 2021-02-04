@@ -109,7 +109,11 @@ class InvitadoController extends Controller
 
         if ( $invitado->load(Yii::$app->request->post()) ) {
             if ( $invitado->validate() ) {
-                //echo "<pre>";var_dump($invitado);die;
+                $result = Persexterno::find()->where(['fcarga'=>date('Y-m-d'),'ci'=>$invitado->ci])->one();
+                if ( $result !== null ) {
+                    Yii::$app->session->setFlash('error',"Ya Existe el invitado que intente registrar!!");
+                    return $this->redirect(['create']);
+                }
                 if ($invitado->save()) {
                     return $this->redirect(['view', 'id' => $invitado->idinv]);
                 }
@@ -174,35 +178,56 @@ class InvitadoController extends Controller
         $purifier = new HtmlPurifier;
         $param = [];
         $habitacion = Habitacion::find()->one();
-        foreach ( Yii::$app->request->get() as $key => $value) {
-            $param[$key] = $purifier->process($value);
-        }
 
-        // colocar en la tabla el sexo del trabajador
-        $invitado = Persexterno::find()->where(['idinv'=>$param['id']])->one();
-        if ( isset($param['param']) ){
-            $param['param'] == 's' ? $invitado->status = true : $invitado->status = false;
-            $invitado->sexo == 'M' && $invitado->status == true ?
-            $habitacion->habhombres -= 1 : '';
-            $invitado->sexo == 'F' && $invitado->status == true ?
-            $habitacion->habmujeres -= 1 : '';
-
-            $invitado->sexo == 'M' && $invitado->status == false ?
-            $habitacion->habhombres += 1 : '';
-            $invitado->sexo == 'F' && $invitado->status == false ?
-            $habitacion->habmujeres += 1 : '';
-            $habitacion->save();
-        }
-
-        if ( $invitado->save() ) {
-            if ($param['param'] == 's'){
-                Yii::$app->session->setFlash('success',"Aceptado: ".$invitado->nombcompleto);
-            }else if ($param['param'] == 'n'){
-                Yii::$app->session->setFlash('error',"No Aceptado: ".$invitado->nombcompleto);
+        if ( $habitacion != null || $habitacion != [] ) {
+            if ( $habitacion->habhombres === 0 && $habitacion->habmujeres === 0 ) {
+                Yii::$app->session->setFlash('error','No hay habitaciones disponibles!!');
+                return $this->redirect(['index']);
             }
-            return $this->redirect(['index']);
+
+            if ( $habitacion->habhombres === 0 ) {
+                Yii::$app->session->setFlash('error','No hay habitaciones disponibles para los Caballeros!!');
+                return $this->redirect(['index']);
+            }
+
+            if ( $habitacion->habmujeres === 0 ) {
+                Yii::$app->session->setFlash('error','No hay habitaciones disponibles para los Damas!!');
+                return $this->redirect(['index']);
+            }
+
+            foreach ( Yii::$app->request->get() as $key => $value) {
+                $param[$key] = $purifier->process($value);
+            }
+
+            // colocar en la tabla el sexo del trabajador
+            $invitado = Persexterno::find()->where(['idinv'=>$param['id']])->one();
+            if ( isset($param['param']) ){
+                $param['param'] == 's' ? $invitado->status = true : $invitado->status = false;
+                $invitado->sexo == 'M' && $invitado->status == true ?
+                $habitacion->habhombres -= 1 : '';
+                $invitado->sexo == 'F' && $invitado->status == true ?
+                $habitacion->habmujeres -= 1 : '';
+
+                $invitado->sexo == 'M' && $invitado->status == false ?
+                $habitacion->habhombres += 1 : '';
+                $invitado->sexo == 'F' && $invitado->status == false ?
+                $habitacion->habmujeres += 1 : '';
+                $habitacion->save();
+            }
+
+            if ( $invitado->save() ) {
+                if ($param['param'] == 's'){
+                    Yii::$app->session->setFlash('success',"Aceptado: ".$invitado->nombcompleto);
+                }else if ($param['param'] == 'n'){
+                    Yii::$app->session->setFlash('error',"No Aceptado: ".$invitado->nombcompleto);
+                }
+                return $this->redirect(['index']);
+            }else {
+                Yii::$app->session->setFlash('error','No se actualizo el status');
+                return $this->redirect(['index']);
+            }
         }else {
-            Yii::$app->session->setFlash('error','No se actualizo el status');
+            Yii::$app->session->setFlash('error','No se puede realizar esta acción, No hay habitaciones disponibles!!');
             return $this->redirect(['index']);
         }
     }

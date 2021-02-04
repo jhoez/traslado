@@ -62,7 +62,7 @@ class Persguardiaisla extends \yii\db\ActiveRecord
             'fcarga' => 'F registro',
             'fsalida' => 'F Ingreso',
             'fretorno' => 'F Egreso',
-            'tippers' => 'Tipo de Guardia',
+            'tippers' => 'Tipo de Pers',
             'status' => 'Status',
             'fkhosp' => 'Hospedaje',
         ];

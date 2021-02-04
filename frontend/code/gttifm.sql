@@ -36,8 +36,8 @@ CREATE TABLE gt.hospedaje
 CREATE TABLE gt.habitacion
 (
   idhab serial NOT NULL,
-  habhombres integer,
-  habmujeres integer,
+  habhombres integer DEFAULT 0,
+  habmujeres integer DEFAULT 0,
   CONSTRAINT idhab PRIMARY KEY (idhab)
 );
 

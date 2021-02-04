@@ -5,6 +5,7 @@ use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\ButtonDropdown;
 use yii\bootstrap\Tabs;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\PersguardiaislaSearch */
@@ -16,7 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="index">
     <p>
         <?php if ( Yii::$app->user->can('superadmin') || Yii::$app->user->can('personal') ): ?>
-            <?= Html::a('Personal guardia', ['index'], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('Añadir Pers Isla', ['create'], ['class' => 'btn btn-primary']) ?>
         <?php endif; ?>
         <?php if( Yii::$app->user->can('superadmin') || Yii::$app->user->can('isla') ):?>
@@ -26,10 +26,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>
 
+    <?php if (
+            Yii::$app->user->can('superadmin') ||
+            Yii::$app->user->can('isla') ||
+            Yii::$app->user->can('secretariogg')
+        ): ?>
+        <div class="text-right">
+            <h3 class="">Habitaciones disponibles</h3>
+            <h4 class="">Hombres: <?=Html::encode($numhab['habhombres']) ?></h4>
+            <h4 class="">Mujeres: <?=Html::encode($numhab['habmujeres']) ?></h4>
+        </div>
+    <?php endif; ?>
+
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?php if( Yii::$app->user->can('secretariogg') ):?>
+        <?php if( Yii::$app->user->can('superadmin') || Yii::$app->user->can('secretariogg') ):?>
             <?= Html::a('Personal no Aceptado', ['index'], ['class' => 'btn btn-primary']) ?>
         <?php endif; ?>
     </p>
@@ -64,6 +76,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'F Salida',
                     'attribute'=>'fsalida',
+                    'filter'=> DatePicker::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'fsalida',
+                        'language' => 'es',
+                        'type' => DatePicker::TYPE_INPUT,//'type' => DatePicker::TYPE_BUTTON,
+                        'options' => ['placeholder' => '0000-00-00'],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-MM-dd'
+                        ],
+                    ]),
                     'value'=>function($data){
                         return $data->fsalida;
                     }
@@ -71,6 +93,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'F Retorno',
                     'attribute'=>'fretorno',
+                    'filter'=> DatePicker::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'fretorno',
+                        'language' => 'es',
+                        'type' => DatePicker::TYPE_INPUT,//'type' => DatePicker::TYPE_BUTTON,
+                        'options' => ['placeholder' => '0000-00-00'],
+                        'pluginOptions' => [
+                            'format' => 'yyyy-MM-dd'
+                        ],
+                    ]),
                     'value'=>function($data){
                         return $data->fretorno;
                     }
@@ -103,6 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label'=>'Status',
                     'attribute'=>'status',
+                    'filter'=>false,
                     'value'=>function($data){
                         return $data->status == 1 ? 'Aceptado' : 'No aceptado';
                     }

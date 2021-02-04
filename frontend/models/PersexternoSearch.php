@@ -49,6 +49,11 @@ class PersexternoSearch extends Persexterno
             'query' => $query,
         ]);
 
+        // formateo con punto decimal
+        if ( !empty($params['PersexternoSearch']['ci']) ) {
+            $params['PersexternoSearch']['ci'] = @number_format($params['PersexternoSearch']['ci'],0,'.','.');
+        }
+
         $this->load($params);
 
         if (!$this->validate()) {
